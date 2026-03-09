@@ -1,0 +1,35 @@
+
+local player = context.player
+local mat = context.matrices
+local pSpeed = P:getSpeed(player)
+local l = (context.bl and 1) or -1 
+local pHealth = P:getHealth(player)
+
+global.walk = global.walk or 0
+global.walkSmoother = global.walkSmoother or 0
+
+--adressing global thingies
+local walk = global.walk
+local walkSmoother = global.walkSmoother
+
+if pSpeed > 0.08 and M:abs(P:getYSpeed(player)) < 0.08 and P:isOnGround(player) then
+    walk = walk + pSpeed * context.deltaTime * 30
+    walkSmoother = walkSmoother + 0.1 * context.deltaTime * 30
+else
+    walkSmoother = walkSmoother - 0.1 * context.deltaTime * 30
+end
+
+walkSmoother = M:clamp(walkSmoother, 0, 1)
+
+local walk_val = (context.bl and walk) or (walk - 0.5 * 1.5)
+
+if pHealth < 6 then
+M:rotateX(mat, 3 * M:sin(walk_val) * walkSmoother, 0, -0.4, 0) 
+M:rotateY(mat, -0.5 * M:cos(walk * 1.5) * walkSmoother * l, 0, -0.4, 0) 
+M:rotateZ(mat, 1 * M:cos(walk * 1.5) * walkSmoother * l, 0, -0.4, 0)
+end
+
+global.walk = walk
+global.walkSmoother = walkSmoother
+
+  --Removed every comment,for better readibility.
